@@ -3,16 +3,13 @@
 const WyvernDAOProxy = artifacts.require('./WyvernDAOProxy.sol')
 const WyvernAtomicizer = artifacts.require('./WyvernAtomicizer.sol')
 
-const { setConfig } = require('./config.js')
 
-module.exports = (deployer, network) => {
-  if (network === 'main') return
-  return deployer.deploy(WyvernDAOProxy)
-    .then(() => {
-      setConfig('deployed.' + network + '.WyvernDAOProxy', WyvernDAOProxy.address)
-      return deployer.deploy(WyvernAtomicizer)
-        .then(() => {
-          setConfig('deployed.' + network + '.WyvernAtomicizer', WyvernAtomicizer.address)
-        })
-    })
+module.exports = async (deployer, network) => {
+
+  // Sounds like the atomicizer is just a primitive multicall
+  if (network !== 'development' || network !== "develop") {
+    await deployer.deploy(WyvernDAOProxy);
+    await deployer.deploy(WyvernAtomicizer);
+  }
+
 }
